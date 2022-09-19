@@ -1,0 +1,64 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"regexp"
+	"strings"
+)
+
+type Interface interface {
+	TransformRune(pos int)
+	GetValueAsRuneSlice() []rune
+}
+
+type entity struct {
+	Interval int
+	Count    int
+	Element  string
+}
+
+func (s *entity) TransformRune(pos int) {
+	if isSpecialCharacter(string(s.Element[pos])) {
+		return
+	}
+
+	if s.Count%s.Interval == 0 {
+		s.Element = s.Element[:pos] + strings.ToUpper(string(s.Element[pos])) + s.Element[pos+1:]
+	}
+
+	s.Count++
+}
+
+func (s *entity) GetValueAsRuneSlice() []rune {
+	return []rune(s.Element)
+}
+
+func MapString(i Interface) {
+	for pos := range i.GetValueAsRuneSlice() {
+		i.TransformRune(pos)
+	}
+}
+
+func NewEntity(l int, s string) entity {
+	return entity{
+		Interval: l,
+		Count:    1,
+		Element:  strings.ToLower(s),
+	}
+}
+
+func main() {
+	s := NewEntity(3, "Aspiration.com")
+	MapString(&s)
+	fmt.Println(s.Element)
+}
+
+func isSpecialCharacter(s string) bool {
+	re, err := regexp.Compile(`[^\w]`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return re.ReplaceAllString(s, " ") == " "
+}
